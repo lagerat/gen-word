@@ -1,7 +1,10 @@
 # from PyQt6.QtWidgets import  QApplication, QMainWindow
 # from PyQt6 import QtCore, QtGui, QtWidgets
 # from PyQt6.QtCore import Qt
+
 import sys
+from datetime import datetime
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 
@@ -10,11 +13,27 @@ class TableModel(QtCore.QAbstractTableModel):
         super(TableModel, self).__init__()
         self._data = data
 
+    headerNames = ['Институт', 'Направление', 'Профиль', 'Семестр', 'Вид практики', 'Тип практики', 'Трудоемкость',
+                   'Дата начала', 'Дата окончания', 'Компетенции']
+
     def data(self, index, role):
         if role == Qt.DisplayRole:
+            value = self._data[index.row()][index.column()]
 
+            if isinstance(value, datetime):
+                # Render time to YYY-MM-DD.
+                return value.strftime("%Y-%m-%d")
 
-            return self._data[index.row()][index.column()]
+            if isinstance(value, float):
+                # Render float to 2 dp
+                return "%.2f" % value
+
+            if isinstance(value, str):
+                # Render strings with quotes
+                return '"%s"' % value
+
+                # Default (anything not captured above: e.g. int)
+            return value
 
     def rowCount(self, index):
         # The length of the outer list.
@@ -24,6 +43,12 @@ class TableModel(QtCore.QAbstractTableModel):
         # The following takes the first sub-list, and returns
         # the length (only works if all rows are an equal length)
         return len(self._data[0])
+
+    def headerData(self, section, orientation, role):
+        # section is the index of the column/row.
+        if role == Qt.DisplayRole:
+            if orientation == Qt.Horizontal:
+                return str(self.headerNames[section])
 
 
 class Ui_MainWindow(object):
@@ -39,11 +64,7 @@ class Ui_MainWindow(object):
 
         ## Data for example
         data = [
-            [4, 9, 2],
-            [1, 0, 0],
-            [3, 5, 0],
-            [3, 3, 2],
-            [7, 8, 9],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         ]
         self.tableModel = TableModel(data)
         self.fisrtStageTable.setModel(self.tableModel)
