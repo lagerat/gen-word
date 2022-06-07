@@ -1,18 +1,14 @@
-# from PyQt6.QtWidgets import  QApplication, QMainWindow
-# from PyQt6 import QtCore, QtGui, QtWidgets
-# from PyQt6.QtCore import Qt
-
 import sys
 from datetime import datetime
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 
-
 class TableModel(QtCore.QAbstractTableModel):
     def __init__(self, data):
         super(TableModel, self).__init__()
         self._data = data
+        
 
     headerNames = ['Институт', 'Направление', 'Профиль', 'Семестр', 'Вид практики', 'Тип практики', 'Трудоемкость',
                    'Дата начала', 'Дата окончания', 'Компетенции']
@@ -49,7 +45,7 @@ class TableModel(QtCore.QAbstractTableModel):
         # section is the index of the column/row.
         if role == Qt.DisplayRole:
             if orientation == Qt.Horizontal:
-                return str(self.headerNames[section])
+                return self.headerNames[section]
 
     def setData(self, index, value, role):
         if role == Qt.EditRole:
@@ -123,6 +119,5 @@ if __name__ == "__main__":
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
-    ui.addRecordToTable(["text", "text", "text", "text", "text", "text", "text", "text", "text", "text"])
     MainWindow.show()
     sys.exit(app.exec())
