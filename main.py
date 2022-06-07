@@ -4,6 +4,8 @@ from datetime import datetime
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 
+from openpyxl import load_workbook
+
 class TableModel(QtCore.QAbstractTableModel):
     def __init__(self, data):
         super(TableModel, self).__init__()
@@ -59,12 +61,10 @@ class TableModel(QtCore.QAbstractTableModel):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
 
 class Ui_MainWindow(object):
-    ## Data for table
     data = [
         ['', '', '', '', '', '', '', '', '', '']
     ]
-    paths = [
-    ]
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1280, 900)
@@ -77,7 +77,6 @@ class Ui_MainWindow(object):
 
         self.tableModel = TableModel(self.data)
         self.fisrtStageTable.setModel(self.tableModel)
-
 
         self.verticalLayout.addWidget(self.fisrtStageTable)
         self.label = QtWidgets.QLabel(self.centralwidget)
@@ -113,7 +112,64 @@ class Ui_MainWindow(object):
         self.uploadBtn.setText(_translate("MainWindow", "Загрузить"))
         self.createBtn.setText(_translate("MainWindow", "Сгененировать"))
 
-    def addRecordToTable(self, record):
+    def connectFunctions(self):
+        self.uploadBtn.clicked.connect(self.onUploadBtn_clicked)
+
+    def __get_rows_xy(self, plan):
+        pred = lambda row: row[0].value and (row[0].value.startswith("Блок 2") or row[0].value.startswith("Блок 3"))
+        block1, block2 = filter(pred, plan.iter_rows())
+
+        return (block1[0].row + 2, block2[0].row - 1)
+
+    def __proceed_table(self, document_name):
+        document = load_workbook(document_name, read_only = True)
+
+        title = document["Титул"]
+        plan = document["План"]
+        competencies = document["Компетенции"]
+ 
+        first_three_cells = [title["D38"].value, title["D27"].value, title["D30"].value]
+
+        x, y = self.__get_rows_xy(plan)
+
+        for row in plan[f"D{x}:F{y}"]:
+            for cell in filter(lambda c: c.value, row):
+                for ch in cell.value:
+                    curr_row = first_three_cells.copy()
+
+                    curr_row.append(ch)
+
+                    if plan["B" + str(cell.row)].value[-2] == "У":
+                        curr_row.append("Учебная")
+                    else:
+                        curr_row.append("Производственная")
+
+                    curr_row.append(plan["C" + str(cell.row)].value)
+                    curr_row.append(plan["N" + str(cell.row)].value + "/" + plan["L" + str(cell.row)].value)
+
+                    comps_l = [s.strip() for s in plan["CP" + str(cell.row)].value.split(";")]
+                    comps_str = str()
+
+                    for row in filter(lambda r: r[1].value and r[1].value in comps_l, competencies.iter_rows()):
+                        comps_str += " " + row[1].value + " - " + row[3].value
+                        if comps_str[-1] != ";":
+                            comps_str += ";"
+
+                    curr_row.extend(["", ""])                    
+
+                    curr_row.append(comps_str.lstrip())
+
+                    self.__addRecordToTable(curr_row)
+
+    def onUploadBtn_clicked(self):
+        filePaths = QtWidgets.QFileDialog.getOpenFileNames(None,"Выберите файлы","","Excel File (*.xlsx *.xls)")
+
+        fileNames = filePaths[0]
+
+        for name in fileNames:
+            self.__proceed_table(name)     
+
+    def __addRecordToTable(self, record):
         lenghtList = len(record)
         if lenghtList < 10:
             return 0
@@ -122,22 +178,15 @@ class Ui_MainWindow(object):
         self.data.append(record)
         self.fisrtStageTable.model().layoutChanged.emit()
 
-    def connectFunctions(self):
-        self.uploadBtn.clicked.connect(self.onUploadBtn_clicked)
-
-    def onUploadBtn_clicked(self):
-        filePaths = QtWidgets.QFileDialog.getOpenFileNames(None,"Выберите файлы","","Excel File (*.xlsx *.xls)")
-        if len(filePaths):
-            self.paths.clear()
-            for path in filePaths[0]:
-                self.paths.append(path)
-
 if __name__ == "__main__":
     import sys
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
+
     ui.setupUi(MainWindow)
+
     MainWindow.show()
+
     sys.exit(app.exec())
