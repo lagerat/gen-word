@@ -177,6 +177,7 @@ class Ui_MainWindow(object):
             self.data.clear()
         self.data.append(record)
         self.fisrtStageTable.model().layoutChanged.emit()
+        self.fisrtStageTable.resizeColumnsToContents()
 
 if __name__ == "__main__":
     import sys
