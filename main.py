@@ -158,12 +158,16 @@ class Ui_MainWindow(object):
                     self.__addRecordToTable(curr_row)
 
     def onUploadBtn_clicked(self):
+        self.uploadBtn.setDisabled(True)
+
         filePaths = QtWidgets.QFileDialog.getOpenFileNames(None,"Выберите файлы","","Excel File (*.xlsx *.xls)")
 
         fileNames = filePaths[0]
 
         for name in fileNames:
-            self.__proceed_table(name)     
+            self.__proceed_table(name)
+
+        self.uploadBtn.setEnabled(True)     
 
     def __addRecordToTable(self, record):
         lenghtList = len(record)
