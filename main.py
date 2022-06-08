@@ -107,7 +107,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Word Generator"))
         self.label.setText(_translate("MainWindow", "informLabel"))
         self.uploadBtn.setText(_translate("MainWindow", "Загрузить"))
         self.createBtn.setText(_translate("MainWindow", "Сгененировать"))
