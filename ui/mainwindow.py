@@ -19,21 +19,25 @@ class Ui_MainWindow(object):
         self.verticalLayout.setObjectName("verticalLayout")
         self.fisrtStageTable = QtWidgets.QTableView(self.centralwidget)
         self.fisrtStageTable.setObjectName("fisrtStageTable")
+        
         self.verticalLayout.addWidget(self.fisrtStageTable)
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setObjectName("label")
         self.verticalLayout.addWidget(self.label)
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
         self.continueBtn = QtWidgets.QPushButton(self.centralwidget)
         self.continueBtn.setObjectName("continueBtn")
-        self.verticalLayout.addWidget(self.continueBtn)
+        self.horizontalLayout.addWidget(self.continueBtn)
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setObjectName("pushButton")
+        self.horizontalLayout.addWidget(self.pushButton)
+        self.verticalLayout.addLayout(self.horizontalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -42,7 +46,8 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label.setText(_translate("MainWindow", "informLabel"))
-        self.continueBtn.setText(_translate("MainWindow", "Подтвердить"))
+        self.continueBtn.setText(_translate("MainWindow", "Загрузить"))
+        self.pushButton.setText(_translate("MainWindow", "Сгененировать"))
 
 
 if __name__ == "__main__":

@@ -26,11 +26,22 @@
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="continueBtn">
-      <property name="text">
-       <string>Подтвердить</string>
-      </property>
-     </widget>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="uploadBtn">
+        <property name="text">
+         <string>Загрузить</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="createBtn">
+        <property name="text">
+         <string>Сгененировать</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
@@ -44,7 +55,6 @@
     </rect>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
  <connections/>

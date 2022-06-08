@@ -1,7 +1,3 @@
-# from PyQt6.QtWidgets import  QApplication, QMainWindow
-# from PyQt6 import QtCore, QtGui, QtWidgets
-# from PyQt6.QtCore import Qt
-
 import sys
 from datetime import datetime
 
@@ -67,10 +63,11 @@ class Ui_MainWindow(object):
     data = [
         ['', '', '', '', '', '', '', '', '', '']
     ]
-
+    paths = [
+    ]
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
+        MainWindow.resize(1280, 900)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -81,30 +78,40 @@ class Ui_MainWindow(object):
         self.tableModel = TableModel(self.data)
         self.fisrtStageTable.setModel(self.tableModel)
 
+
         self.verticalLayout.addWidget(self.fisrtStageTable)
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setObjectName("label")
+
         self.verticalLayout.addWidget(self.label)
-        self.continueBtn = QtWidgets.QPushButton(self.centralwidget)
-        self.continueBtn.setObjectName("continueBtn")
-        self.verticalLayout.addWidget(self.continueBtn)
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+
+        self.uploadBtn = QtWidgets.QPushButton(self.centralwidget)
+        self.uploadBtn.setObjectName("uploadBtn")
+        self.horizontalLayout.addWidget(self.uploadBtn)
+
+        self.createBtn = QtWidgets.QPushButton(self.centralwidget)
+        self.createBtn.setObjectName("createBtn")
+        self.horizontalLayout.addWidget(self.createBtn)
+        self.verticalLayout.addLayout(self.horizontalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+        self.connectFunctions()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label.setText(_translate("MainWindow", "informLabel"))
-        self.continueBtn.setText(_translate("MainWindow", "Подтвердить"))
+        self.uploadBtn.setText(_translate("MainWindow", "Загрузить"))
+        self.createBtn.setText(_translate("MainWindow", "Сгененировать"))
 
     def addRecordToTable(self, record):
         lenghtList = len(record)
@@ -115,6 +122,15 @@ class Ui_MainWindow(object):
         self.data.append(record)
         self.fisrtStageTable.model().layoutChanged.emit()
 
+    def connectFunctions(self):
+        self.uploadBtn.clicked.connect(self.onUploadBtn_clicked)
+
+    def onUploadBtn_clicked(self):
+        filePaths = QtWidgets.QFileDialog.getOpenFileNames(None,"Выберите файлы","","Excel File (*.xlsx *.xls)")
+        if len(filePaths):
+            self.paths.clear()
+            for path in filePaths[0]:
+                self.paths.append(path)
 
 if __name__ == "__main__":
     import sys
