@@ -8,6 +8,7 @@ from datetime import datetime
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 
+
 class TableModel(QtCore.QAbstractTableModel):
     def __init__(self, data):
         super(TableModel, self).__init__()
@@ -17,7 +18,7 @@ class TableModel(QtCore.QAbstractTableModel):
                    'Дата начала', 'Дата окончания', 'Компетенции']
 
     def data(self, index, role):
-        if role == Qt.DisplayRole:
+        if role == Qt.DisplayRole or role == Qt.EditRole:
             value = self._data[index.row()][index.column()]
 
             if isinstance(value, datetime):
@@ -30,7 +31,7 @@ class TableModel(QtCore.QAbstractTableModel):
 
             if isinstance(value, str):
                 # Render strings with quotes
-                return '"%s"' % value
+                return '%s' % value
 
                 # Default (anything not captured above: e.g. int)
             return value
@@ -50,8 +51,23 @@ class TableModel(QtCore.QAbstractTableModel):
             if orientation == Qt.Horizontal:
                 return str(self.headerNames[section])
 
+    def setData(self, index, value, role):
+        if role == Qt.EditRole:
+            if index.column() == 7 or index.column() == 8:
+                self._data[index.row()][index.column()] = value
+                return True
+            return False
+        return False
+
+    def flags(self, index):
+        return Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
 
 class Ui_MainWindow(object):
+    ## Data for table
+    data = [
+        ['', '', '', '', '', '', '', '', '', '']
+    ]
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
@@ -62,11 +78,7 @@ class Ui_MainWindow(object):
         self.fisrtStageTable = QtWidgets.QTableView(self.centralwidget)
         self.fisrtStageTable.setObjectName("fisrtStageTable")
 
-        ## Data for example
-        data = [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        ]
-        self.tableModel = TableModel(data)
+        self.tableModel = TableModel(self.data)
         self.fisrtStageTable.setModel(self.tableModel)
 
         self.verticalLayout.addWidget(self.fisrtStageTable)
@@ -85,10 +97,8 @@ class Ui_MainWindow(object):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
-
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -96,12 +106,23 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "informLabel"))
         self.continueBtn.setText(_translate("MainWindow", "Подтвердить"))
 
+    def addRecordToTable(self, record):
+        lenghtList = len(record)
+        if lenghtList < 10:
+            return 0
+        if self.data[0][0] == '':
+            self.data.clear()
+        self.data.append(record)
+        self.fisrtStageTable.model().layoutChanged.emit()
+
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
+    ui.addRecordToTable(["text", "text", "text", "text", "text", "text", "text", "text", "text", "text"])
     MainWindow.show()
     sys.exit(app.exec())
