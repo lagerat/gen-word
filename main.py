@@ -177,8 +177,6 @@ class Ui_MainWindow(object):
             if rowData[7] != '' and rowData[8] != '':
                 print("Wait")
 
->>>>>>> 46d37b8d79ec460448cc8fc3d8e1481b30257cbe
-
     def __addRecordToTable(self, record):
         lenghtList = len(record)
         if lenghtList < 10:
