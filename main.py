@@ -175,6 +175,9 @@ class Ui_MainWindow(object):
         self.uploadBtn.setEnabled(True)   
 
     def onCreateBtn_clicked(self):
+
+        docsPath = QtWidgets.QFileDialog.getOpenFileNames(None, "Выберите файлы в качестве примера", "", "Word (*.docx *.docm *.doc )")
+
         for  rowData in self.data:
             if rowData[7] != '' and rowData[8] != '':
                 self.__generate_doc_diary(rowData)
