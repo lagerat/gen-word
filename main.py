@@ -1,3 +1,4 @@
+import re
 import sys
 from copy import deepcopy
 from datetime import datetime
@@ -187,13 +188,35 @@ class Ui_MainWindow(object):
 
         self.uploadBtn.setEnabled(True)   
 
+    def __fill_doc(self, doc, row):
+        paragraphs = doc.paragraphs
+        
+        for p in paragraphs:
+            for r in p.runs:
+                if re.search(r"^\{([1-9]|1[0])\}$", r.text):
+                    col = int(r.text[1:-1])
+                    r.text = row[col - 1]
+
     def onCreateBtn_clicked(self):
 
         docsPath = QtWidgets.QFileDialog.getOpenFileNames(None, "Выберите файлы в качестве примера", "", "Word (*.docx *.docm *.doc )")
 
+        docsNames = docsPath[0]
+
+        if len(docsNames) == 0:
+            return        
+
+        originalDocs = [Document(name) for name in docsNames]
+
         for  rowData in self.data:
             if rowData[7] != '' and rowData[8] != '':
-                self.__generate_doc_diary(rowData)
+                docs = [deepcopy(doc) for doc in originalDocs]
+
+                for doc in docs:
+                    self.__fill_doc(doc, rowData)
+
+                for idx, doc in enumerate(docs):
+                    doc.save(str(idx) + ".docx")
 
     def __addRecordToTable(self, record):
         lenghtList = len(record)
