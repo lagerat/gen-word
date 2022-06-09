@@ -79,10 +79,7 @@ class Ui_MainWindow(object):
         self.fisrtStageTable.setModel(self.tableModel)
 
         self.verticalLayout.addWidget(self.fisrtStageTable)
-        self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setObjectName("label")
 
-        self.verticalLayout.addWidget(self.label)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
 
@@ -108,7 +105,6 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Word Generator"))
-        self.label.setText(_translate("MainWindow", "informLabel"))
         self.uploadBtn.setText(_translate("MainWindow", "Загрузить"))
         self.createBtn.setText(_translate("MainWindow", "Сгененировать"))
 
