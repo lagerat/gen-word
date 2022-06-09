@@ -33,7 +33,9 @@ class TableModel(QtCore.QAbstractTableModel):
 
                 # Default (anything not captured above: e.g. int)
             return value
-
+        if role == Qt.ToolTipRole:
+            if index.column() == 7 or index.column() == 8:
+                return "Формат должен быть: ДД месяц ГГГГ"
     def rowCount(self, index):
         # The length of the outer list.
         return len(self._data)
@@ -110,6 +112,7 @@ class Ui_MainWindow(object):
 
     def connectFunctions(self):
         self.uploadBtn.clicked.connect(self.onUploadBtn_clicked)
+        self.createBtn.clicked.connect(self.onCreateBtn_clicked)
 
     def __get_rows_xy(self, plan):
         pred = lambda row: row[0].value and (row[0].value.startswith("Блок 2") or row[0].value.startswith("Блок 3"))
@@ -164,6 +167,11 @@ class Ui_MainWindow(object):
 
         for name in fileNames:
             self.__proceed_table(name)     
+    def onCreateBtn_clicked(self):
+        for  rowData in self.data:
+            if rowData[7] != '' and rowData[8] != '':
+                print("Wait")
+
 
     def __addRecordToTable(self, record):
         lenghtList = len(record)
