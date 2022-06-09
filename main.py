@@ -172,29 +172,7 @@ class Ui_MainWindow(object):
         for name in fileNames:
             self.__proceed_table(name)
 
-        self.uploadBtn.setEnabled(True)     
-
-    def __generate_doc_diary(self, row):
-        doc_diary = deepcopy(Document(".docs\diary.docx"))
-
-        paragraphs = doc_diary.paragraphs
-
-        paragraphs[45].runs[0].text = row[0]
-        paragraphs[54].runs[2].add_text(" " + str(datetime.now().year))
-        paragraphs[59].runs[1].text = row[7]
-        paragraphs[73].runs[1].text = row[7]
-        paragraphs[79].runs[1].text = row[7]
-        paragraphs[91].runs[0].text = row[8]
-        paragraphs[104].runs[3].text = row[6]
-        paragraphs[105].runs[5].text = row[4]
-        paragraphs[106].runs[4].text = row[5]
-        paragraphs[109].runs[2].text = row[7]
-        paragraphs[110].runs[3].text = row[8]
-        paragraphs[115].runs[1].text = row[7]
-        paragraphs[120].runs[1].text = row[8]
-        paragraphs[138].runs[1].text = row[8]
-
-        doc_diary.save(row[1] + "_" + row[2] + "_" + row[3] + "_" + "дневник.docx")        
+        self.uploadBtn.setEnabled(True)   
 
     def onCreateBtn_clicked(self):
         for  rowData in self.data:
