@@ -62,6 +62,19 @@ class TableModel(QtCore.QAbstractTableModel):
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
 
+
+class ValidatedItemDelegate(QtWidgets.QItemDelegate):
+    def createEditor(self, widget, option, index):
+        if not index.isValid():
+            return 0
+        if index.column() == 7 or index.column() == 8:
+            editor = QtWidgets.QLineEdit(widget)
+            validator = QtGui.QRegExpValidator(QtCore.QRegExp("\d{2} [a-zA-Zа-яА-Я]{0,10} \d{4}"), editor)
+            editor.setValidator(validator)
+            return editor
+
+        return super(ValidatedItemDelegate, self).createEditor(widget, option, index)
+
 class Ui_MainWindow(object):
     data = [
         ['', '', '', '', '', '', '', '', '', '']
@@ -101,7 +114,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
+        self.fisrtStageTable.setItemDelegate(ValidatedItemDelegate())
         self.connectFunctions()
 
     def retranslateUi(self, MainWindow):
