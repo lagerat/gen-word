@@ -196,16 +196,16 @@ class Ui_MainWindow(object):
 
         i = int(s)
 
-        if i < 0 or i > 9:
+        if i < 1 or i > 10:
             return
 
         run.font.highlight_color = WD_COLOR_INDEX.AUTO
 
-        if i == 3:
-            sem = int(row[i])
+        if i == 4:
+            sem = int(row[i - 1])
             run.text = str(sem // 2 + sem % 2)
         else:
-            run.text = row[i]
+            run.text = row[i - 1]
 
     def __fill_doc(self, doc, row):
         for paragraph in doc.paragraphs:
