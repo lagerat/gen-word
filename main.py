@@ -204,6 +204,10 @@ class Ui_MainWindow(object):
         if i == 4:
             sem = int(row[i - 1])
             run.text = str(sem // 2 + sem % 2)
+        elif i == 8 or i == 9:
+            dataString = str(row[i - 1])
+            slice = dataString[2:]
+            run.text = str('"' + dataString[0] + dataString[1] + '"' + slice + ' г.')
         else:
             run.text = row[i - 1]
 
