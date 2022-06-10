@@ -1,4 +1,3 @@
-import re
 import sys
 from copy import deepcopy
 from datetime import datetime
@@ -8,6 +7,7 @@ from PyQt5.QtCore import Qt
 
 from docx import Document
 from openpyxl import load_workbook
+from docx.enum.text import WD_COLOR_INDEX
 
 class TableModel(QtCore.QAbstractTableModel):
     def __init__(self, data):
@@ -188,14 +188,39 @@ class Ui_MainWindow(object):
 
         self.uploadBtn.setEnabled(True)   
 
+    def __fill_run(self, run, row):
+        s = run.text.strip()
+
+        if not s.isdigit():
+            return
+
+        i = int(s)
+
+        if i < 0 or i > 9:
+            return
+
+        run.font.highlight_color = WD_COLOR_INDEX.AUTO
+
+        if i == 3:
+            sem = int(row[i])
+            run.text = str(sem // 2 + sem % 2)
+        else:
+            run.text = row[i]
+
     def __fill_doc(self, doc, row):
-        paragraphs = doc.paragraphs
-        
-        for p in paragraphs:
-            for r in p.runs:
-                if re.search(r"^\{([1-9]|1[0])\}$", r.text):
-                    col = int(r.text[1:-1])
-                    r.text = row[col - 1]
+        for paragraph in doc.paragraphs:
+            for run in paragraph.runs:
+                if run.font.highlight_color == WD_COLOR_INDEX.RED:
+                    self.__fill_run(run, row)
+
+        for table in doc.tables:
+            for r in table.rows:
+                for cell in r.cells:
+                    for paragraph in cell.paragraphs:
+                        for run in paragraph.runs:
+                            if run.font.highlight_color == WD_COLOR_INDEX.RED:
+                                self.__fill_run(run, row)
+                    
 
     def onCreateBtn_clicked(self):
 
