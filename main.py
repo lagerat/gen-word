@@ -95,7 +95,9 @@ class Ui_MainWindow(object):
 
         self.tableModel = TableModel(self.data)
         self.fisrtStageTable.setModel(self.tableModel)
-
+        self.fisrtStageTable.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+        self.fisrtStageTable.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+        
         self.verticalLayout.addWidget(self.fisrtStageTable)
 
         self.horizontalLayout = QtWidgets.QHBoxLayout()
