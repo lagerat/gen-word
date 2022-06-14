@@ -47,7 +47,19 @@
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Меню</string>
+    </property>
+    <addaction name="uploadToExcel"/>
+   </widget>
+   <addaction name="menu"/>
   </widget>
+  <action name="uploadToExcel">
+   <property name="text">
+    <string>Выгрузить в excel</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

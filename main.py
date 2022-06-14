@@ -56,11 +56,10 @@ class TableModel(QtCore.QAbstractTableModel):
 
     def setData(self, index, value, role):
         if role == Qt.EditRole:
-            if index.column() == 7 or index.column() == 8:
-                self._data[index.row()][index.column()] = value
-                return True
-            return False
+            self._data[index.row()][index.column()] = value
+            return True
         return False
+
 
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
@@ -115,7 +114,13 @@ class Ui_MainWindow(object):
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
         self.menubar.setObjectName("menubar")
+        self.menu = QtWidgets.QMenu(self.menubar)
+        self.menu.setObjectName("menu")
         MainWindow.setMenuBar(self.menubar)
+        self.uploadToExcel = QtWidgets.QAction(MainWindow)
+        self.uploadToExcel.setObjectName("UploadToExcel");
+        self.menu.addAction(self.uploadToExcel)
+        self.menubar.addAction(self.menu.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -127,11 +132,17 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "Word Generator"))
         self.uploadBtn.setText(_translate("MainWindow", "Загрузить"))
         self.createBtn.setText(_translate("MainWindow", "Сгененировать"))
+        self.menu.setTitle(_translate("MainWindow", "Меню"))
+        self.uploadToExcel.setText(_translate("MainWindow", "Выгрузить в excel"))
 
     def connectFunctions(self):
         self.uploadBtn.clicked.connect(self.onUploadBtn_clicked)
         self.createBtn.clicked.connect(self.onCreateBtn_clicked)
+        self.uploadToExcel.triggered.connect(self.uploadExcelFunc)
 
+
+    def uploadExcelFunc(self):
+        print("Hello world")
     def __get_rows_xy(self, plan):
         pred = lambda row: row[0].value and (row[0].value.startswith("Блок 2") or row[0].value.startswith("Блок 3"))
         block1, block2 = filter(pred, plan.iter_rows())
