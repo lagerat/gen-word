@@ -6,8 +6,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 
 from docx import Document
-from openpyxl import load_workbook
 from docx.enum.text import WD_COLOR_INDEX
+
+from openpyxl.utils import get_column_letter
+from openpyxl import load_workbook, Workbook
+from openpyxl.worksheet.table import Table, TableStyleInfo
 
 class TableModel(QtCore.QAbstractTableModel):
     def __init__(self, data):
@@ -142,7 +145,35 @@ class Ui_MainWindow(object):
 
 
     def uploadExcelFunc(self):
-        print("Hello world")
+        doc = Workbook()
+
+        active = doc.active
+
+        isEmpty = True
+
+        active.append(self.tableModel.headerNames)
+
+        maxLengths = [len(name) for name in self.tableModel.headerNames]
+
+        for row in self.data:
+            if row[7] != "" and row[8] != "":
+                active.append(row)
+                isEmpty = False
+                
+                for i, maxLength in enumerate(maxLengths):
+                    maxLengths[i] = max(maxLength, len(row[i]))
+
+        if isEmpty:
+            return
+
+        for i, maxLength in enumerate(maxLengths):
+            active.column_dimensions[get_column_letter(i + 1)].width = maxLength + 5
+
+        try:
+            doc.save("Сводная таблица.xlsx")
+        except:
+            None
+
     def __get_rows_xy(self, plan):
         pred = lambda row: row[0].value and (row[0].value.startswith("Блок 2") or row[0].value.startswith("Блок 3"))
         block1, block2 = filter(pred, plan.iter_rows())
