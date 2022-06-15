@@ -289,7 +289,8 @@ class Ui_MainWindow(object):
                     self.__fill_doc(doc, rowData)
 
                 for idx, doc in enumerate(docs):
-                    doc.save(str(idx) + ".docx")
+                    doc.save(rowData[1] + "_" + rowData[2] + "_" + 
+                             rowData[3] + "_" + os.path.basename(docsNames[idx]))
 
     def __addRecordToTable(self, record):
         lenghtList = len(record)
