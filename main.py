@@ -82,6 +82,15 @@ class ValidatedItemDelegate(QtWidgets.QItemDelegate):
 
         return super(ValidatedItemDelegate, self).createEditor(widget, option, index)
 
+class DateEditDelegate(QtWidgets.QItemDelegate):
+    def __init__(self, parent = None):
+        super(QtWidgets.QItemDelegate, self).__init__(parent)
+
+    def createEditor(self, parent, option, index):
+        dateEdit = QtWidgets.QDateEdit(parent)
+        dateEdit.setDisplayFormat("dd.MM.yyyy")
+        return dateEdit
+
 class Ui_MainWindow(object):
     data = [
         ['', '', '', '', '', '', '', '', '', '']
@@ -129,7 +138,9 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        self.fisrtStageTable.setItemDelegate(ValidatedItemDelegate())
+        #self.fisrtStageTable.setItemDelegate(ValidatedItemDelegate())
+        self.fisrtStageTable.setItemDelegateForColumn(7, DateEditDelegate(MainWindow))
+        self.fisrtStageTable.setItemDelegateForColumn(8, DateEditDelegate(MainWindow))
         self.connectFunctions()
 
     def retranslateUi(self, MainWindow):
