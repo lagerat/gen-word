@@ -1,6 +1,8 @@
+import os
 import sys
 from copy import deepcopy
 from datetime import datetime
+from datetime import date
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
@@ -240,7 +242,7 @@ class Ui_MainWindow(object):
 
         i = int(s)
 
-        if i < 1 or i > 10:
+        if i < 1 or i > 11:
             return
 
         run.font.highlight_color = WD_COLOR_INDEX.AUTO
@@ -252,6 +254,9 @@ class Ui_MainWindow(object):
             dataString = str(row[i - 1])
             slice = dataString[2:]
             run.text = str('"' + dataString[0] + dataString[1] + '"' + slice + ' г.')
+        elif i == 11:
+            currentYear = date.today().year
+            run.text = str(currentYear)
         else:
             run.text = row[i - 1]
 
@@ -303,7 +308,7 @@ class Ui_MainWindow(object):
         self.fisrtStageTable.resizeColumnsToContents()
 
 if __name__ == "__main__":
-    import sys
+    # import sys
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
