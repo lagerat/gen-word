@@ -272,10 +272,12 @@ class Ui_MainWindow(object):
             return
         run.font.highlight_color = WD_COLOR_INDEX.AUTO
         competencies = str(row[i - 1]).split(';')
-        run.text = competencies
+        run.text = competencies[0]
         length = len(competencies)
         if length > 1:
             for x in range(1, length):
+                if competencies[x] == '':
+                    continue
                 newrow = table.add_row().cells
                 newrow[0].text = competencies[x]
 
