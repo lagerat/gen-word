@@ -51,7 +51,7 @@ class TableModel(QtCore.QAbstractTableModel):
     def columnCount(self, index):
         # The following takes the first sub-list, and returns
         # the length (only works if all rows are an equal length)
-        return len(self._data[0])
+        return len(self.headerNames)
 
     def headerData(self, section, orientation, role):
         # section is the index of the column/row.
@@ -92,9 +92,7 @@ class DateEditDelegate(QtWidgets.QItemDelegate):
         return dateEdit
 
 class Ui_MainWindow(object):
-    data = [
-        ['', '', '', '', '', '', '', '', '', '']
-    ]
+    data = []
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("Word Generator")
@@ -138,7 +136,6 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        #self.fisrtStageTable.setItemDelegate(ValidatedItemDelegate())
         self.fisrtStageTable.setItemDelegateForColumn(7, DateEditDelegate(MainWindow))
         self.fisrtStageTable.setItemDelegateForColumn(8, DateEditDelegate(MainWindow))
         self.connectFunctions()
@@ -169,12 +166,15 @@ class Ui_MainWindow(object):
         maxLengths = [len(name) for name in self.tableModel.headerNames]
 
         for row in self.data:
-            if row[7] != "" and row[8] != "":
-                active.append(row)
+            if row[7].toString() != "" and row[8].toString() != "":
+                temp_row = row[:7] + [row[7].toString("dd.MM.yyyy"), row[8].toString("dd.MM.yyyy"), row[9]]
+                
+                active.append(temp_row)
+
                 isEmpty = False
                 
                 for i, maxLength in enumerate(maxLengths):
-                    maxLengths[i] = max(maxLength, len(row[i]))
+                    maxLengths[i] = max(maxLength, len(temp_row[i]))
 
         if isEmpty:
             return
@@ -227,7 +227,7 @@ class Ui_MainWindow(object):
                         if comps_str[-1] != ";":
                             comps_str += ";"
 
-                    curr_row.extend(["", ""])                    
+                    curr_row.extend([QtCore.QDate(), QtCore.QDate()])                    
 
                     curr_row.append(comps_str.lstrip())
 
@@ -262,9 +262,7 @@ class Ui_MainWindow(object):
             sem = int(row[i - 1])
             run.text = str(sem // 2 + sem % 2)
         elif i == 8 or i == 9:
-            dataString = str(row[i - 1])
-            slice = dataString[2:]
-            run.text = str('"' + dataString[0] + dataString[1] + '"' + slice + ' г.')
+            run.text = row[i - 1].toString("\"dd\" MMMM yyyy г.").lower()
         elif i == 11:
             currentYear = date.today().year
             run.text = str(currentYear)
@@ -316,7 +314,6 @@ class Ui_MainWindow(object):
                     
 
     def onCreateBtn_clicked(self):
-
         docsPath = QtWidgets.QFileDialog.getOpenFileNames(None, "Выберите файлы в качестве примера", "", "Word (*.docx *.docm *.doc )")
 
         docsNames = docsPath[0]
@@ -327,7 +324,7 @@ class Ui_MainWindow(object):
         originalDocs = [Document(name) for name in docsNames]
 
         for  rowData in self.data:
-            if rowData[7] != '' and rowData[8] != '':
+            if rowData[7].toString() != '' and rowData[8].toString() != '':
                 docs = [deepcopy(doc) for doc in originalDocs]
 
                 for doc in docs:
@@ -338,18 +335,11 @@ class Ui_MainWindow(object):
                              rowData[3] + "_" + os.path.basename(docsNames[idx]))
 
     def __addRecordToTable(self, record):
-        lenghtList = len(record)
-        if lenghtList < 10:
-            return 0
-        if self.data[0][0] == '':
-            self.data.clear()
         self.data.append(record)
         self.fisrtStageTable.model().layoutChanged.emit()
         self.fisrtStageTable.resizeColumnsToContents()
 
 if __name__ == "__main__":
-    # import sys
-
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
