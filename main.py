@@ -260,6 +260,26 @@ class Ui_MainWindow(object):
         else:
             run.text = row[i - 1]
 
+    def __fill_Comptencies(self,run, row, table):
+        s = run.text.strip()
+
+        if not s.isdigit():
+            return
+
+        i = int(s)
+
+        if i < 1 or i > 11:
+            return
+        run.font.highlight_color = WD_COLOR_INDEX.AUTO
+        competencies = str(row[i - 1]).split(';')
+        run.text = competencies
+        length = len(competencies)
+        if length > 1:
+            for x in range(1, length):
+                newrow = table.add_row().cells
+                newrow[0].text = competencies[x]
+
+
     def __fill_doc(self, doc, row):
         for paragraph in doc.paragraphs:
             for run in paragraph.runs:
@@ -270,9 +290,16 @@ class Ui_MainWindow(object):
             for r in table.rows:
                 for cell in r.cells:
                     for paragraph in cell.paragraphs:
+                        s = ''
                         for run in paragraph.runs:
+                            s = s + run.text
+                            if not s.isdigit():
+                                s = ''
                             if run.font.highlight_color == WD_COLOR_INDEX.RED:
-                                self.__fill_run(run, row)
+                                if s == "10":
+                                    self.__fill_Comptencies(run, row, table)
+                                else:
+                                    self.__fill_run(run, row)
                     
 
     def onCreateBtn_clicked(self):
