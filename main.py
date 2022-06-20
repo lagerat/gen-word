@@ -171,7 +171,6 @@ class Ui_MainWindow(object):
         self.createBtn.clicked.connect(self.onCreateBtn_clicked)
         self.uploadToExcel.triggered.connect(self.uploadExcelFunc)
 
-
     def uploadExcelFunc(self):
         doc = Workbook()
 
@@ -222,6 +221,7 @@ class Ui_MainWindow(object):
         direction = self.codeDirection.get(first_three_cells[1])
         if direction != None:
             first_three_cells[1] = first_three_cells[1] + "-" + direction
+
         x, y = self.__get_rows_xy(plan)
 
         for row in plan[f"D{x}:F{y}"]:
@@ -343,7 +343,7 @@ class Ui_MainWindow(object):
 
         originalDocs = [Document(name) for name in docsNames]
 
-        workingDir = os.getcwd()
+        absWorkingDir = os.path.abspath(os.getcwd())
 
         for  rowData in self.data:
             if rowData[7].toString() != '' and rowData[8].toString() != '':
@@ -353,30 +353,11 @@ class Ui_MainWindow(object):
                     self.__fill_doc(doc, rowData)
 
                 for idx, doc in enumerate(docs):
-                    if not os.path.exists(rowData[1]):
-                        os.mkdir(rowData[1])
+                    path = os.path.join(absWorkingDir, rowData[1], rowData[2], rowData[3])
 
-                    os.chdir(rowData[1])
+                    os.makedirs(path, exist_ok = True)
 
-                    if not os.path.exists(rowData[2]):
-                        os.mkdir(rowData[2])
-
-                    os.chdir(rowData[2])
-
-                    if not os.path.exists(rowData[3]):
-                        os.mkdir(rowData[3])
-
-                    os.chdir(rowData[3])
-
-                    if not os.path.exists(rowData[5]):
-                        os.mkdir(rowData[5])
-
-                    os.chdir(rowData[5])
-
-                    doc.save(rowData[1] + "_" + rowData[2] + "_" + 
-                             rowData[3] + "_" + os.path.basename(docsNames[idx]))
-
-                    os.chdir(workingDir)
+                    doc.save("\\\\?\\" + os.path.join(path, "_".join([rowData[1], rowData[2], rowData[3], os.path.basename(docsNames[idx])])))
 
     def __addRecordToTable(self, record):
         self.data.append(record)
