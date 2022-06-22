@@ -353,11 +353,13 @@ class Ui_MainWindow(object):
                     self.__fill_doc(doc, rowData)
 
                 for idx, doc in enumerate(docs):
-                    path = os.path.join(absWorkingDir, rowData[1], rowData[2], rowData[3])
+                    onlyDirection = rowData[1][:8]
+
+                    path = os.path.join(absWorkingDir, onlyDirection, rowData[2], rowData[3])
 
                     os.makedirs(path, exist_ok = True)
 
-                    doc.save("\\\\?\\" + os.path.join(path, "_".join([rowData[1], rowData[2], rowData[3], os.path.basename(docsNames[idx])])))
+                    doc.save(os.path.join(path, "_".join([onlyDirection, rowData[2], rowData[3], os.path.basename(docsNames[idx])])))
 
     def __addRecordToTable(self, record):
         self.data.append(record)
