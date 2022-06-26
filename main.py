@@ -209,17 +209,24 @@ class Ui_MainWindow(object):
         self.createBtn.clicked.connect(self.onCreateBtn_clicked)
         self.uploadToExcel.triggered.connect(self.uploadExcelFunc)
         self.fisrtStageTable.selectionModel().selectionChanged.connect(self.tableSelectionChangend)
-        self.clearCellBtn.clicked.connect(self.onClearCellBtnClick)
-        self.deleteRowBtn.clicked.connect(self.onDelRowBtnClick)
+        self.clearCellBtn.clicked.connect(self.onClearCellBtn_click)
+        self.deleteRowBtn.clicked.connect(self.onDelRowBtn_click)
+        self.stretchBtn.clicked.connect(self.onStretchBtn_click)
 
-    def onDelRowBtnClick(self):
+    def onStretchBtn_click(self):
+        if len(self.selectedCells) > 0:
+            firstRecord = self.data[self.selectedCells[0][0]][self.selectedCells[0][1]]
+            for record in self.selectedCells[1:]:
+                self.data[record[0]][record[1]] = firstRecord
+
+    def onDelRowBtn_click(self):
         if len(self.selectedCells) > 0:
             for record in self.selectedCells:
                 del self.data[record[0]]
             self.fisrtStageTable.model().layoutChanged.emit()
             self.fisrtStageTable.resizeColumnsToContents()
 
-    def onClearCellBtnClick(self):
+    def onClearCellBtn_click(self):
         if len(self.selectedCells) > 0:
             for record in self.selectedCells:
                 self.data[record[0]][record[1]] = ''
