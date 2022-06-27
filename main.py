@@ -93,6 +93,7 @@ class DateEditDelegate(QtWidgets.QItemDelegate):
 
 class Ui_MainWindow(object):
     data = []
+    selectedCells = []
     codeDirection = {
         '01.03.02': 'Прикладная математика и информатика',
         '02.03.02': 'Фундаментальная информатика и информационные технологии',
@@ -117,43 +118,77 @@ class Ui_MainWindow(object):
         MainWindow.resize(1280, 900)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
-        self.verticalLayout.setObjectName("verticalLayout")
+
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.centralwidget)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+
         self.fisrtStageTable = QtWidgets.QTableView(self.centralwidget)
         self.fisrtStageTable.setObjectName("fisrtStageTable")
 
-        self.tableModel = TableModel(self.data)
-        self.fisrtStageTable.setModel(self.tableModel)
-        self.fisrtStageTable.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
-        self.fisrtStageTable.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
-        
-        self.verticalLayout.addWidget(self.fisrtStageTable)
+        self.horizontalLayout_2.addWidget(self.fisrtStageTable)
+
+        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
+
+        self.clearCellBtn = QtWidgets.QPushButton(self.centralwidget)
+        self.clearCellBtn.setObjectName("clearCellBtn")
+
+        self.verticalLayout.addWidget(self.clearCellBtn)
+
+        self.deleteRowBtn = QtWidgets.QPushButton(self.centralwidget)
+        self.deleteRowBtn.setObjectName("deleteRowBtn")
+
+        self.verticalLayout.addWidget(self.deleteRowBtn)
+
+        self.stretchBtn = QtWidgets.QPushButton(self.centralwidget)
+        self.stretchBtn.setEnabled(False)
+        self.stretchBtn.setObjectName("stretchBtn")
+
+        self.verticalLayout.addWidget(self.stretchBtn)
+
+        self.horizontalLayout_2.addLayout(self.verticalLayout)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_2)
 
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
 
         self.uploadBtn = QtWidgets.QPushButton(self.centralwidget)
         self.uploadBtn.setObjectName("uploadBtn")
+
         self.horizontalLayout.addWidget(self.uploadBtn)
 
         self.createBtn = QtWidgets.QPushButton(self.centralwidget)
         self.createBtn.setObjectName("createBtn")
+
         self.horizontalLayout.addWidget(self.createBtn)
-        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.verticalLayout_2.addLayout(self.horizontalLayout)
+
         MainWindow.setCentralWidget(self.centralwidget)
+
         self.menubar = QtWidgets.QMenuBar(MainWindow)
+
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
         self.menubar.setObjectName("menubar")
         self.menu = QtWidgets.QMenu(self.menubar)
         self.menu.setObjectName("menu")
         MainWindow.setMenuBar(self.menubar)
+
         self.uploadToExcel = QtWidgets.QAction(MainWindow)
-        self.uploadToExcel.setObjectName("UploadToExcel");
+        self.uploadToExcel.setObjectName("uploadToExcel")
         self.menu.addAction(self.uploadToExcel)
         self.menubar.addAction(self.menu.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+        self.tableModel = TableModel(self.data)
+        self.fisrtStageTable.setModel(self.tableModel)
+        self.fisrtStageTable.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+        self.fisrtStageTable.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+
         self.fisrtStageTable.setItemDelegateForColumn(7, DateEditDelegate(MainWindow))
         self.fisrtStageTable.setItemDelegateForColumn(8, DateEditDelegate(MainWindow))
         self.connectFunctions()
@@ -161,6 +196,9 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Word Generator"))
+        self.clearCellBtn.setText(_translate("MainWindow", "Очистить"))
+        self.deleteRowBtn.setText(_translate("MainWindow", "Удалить строку"))
+        self.stretchBtn.setText(_translate("MainWindow", "Расстянуть"))
         self.uploadBtn.setText(_translate("MainWindow", "Загрузить"))
         self.createBtn.setText(_translate("MainWindow", "Сгененировать"))
         self.menu.setTitle(_translate("MainWindow", "Меню"))
@@ -170,6 +208,57 @@ class Ui_MainWindow(object):
         self.uploadBtn.clicked.connect(self.onUploadBtn_clicked)
         self.createBtn.clicked.connect(self.onCreateBtn_clicked)
         self.uploadToExcel.triggered.connect(self.uploadExcelFunc)
+        self.fisrtStageTable.selectionModel().selectionChanged.connect(self.tableSelectionChangend)
+        self.clearCellBtn.clicked.connect(self.onClearCellBtn_click)
+        self.deleteRowBtn.clicked.connect(self.onDelRowBtn_click)
+        self.stretchBtn.clicked.connect(self.onStretchBtn_click)
+
+    def onStretchBtn_click(self):
+        if len(self.selectedCells) > 0:
+            firstRecord = self.data[self.selectedCells[0][0]][self.selectedCells[0][1]]
+            for record in self.selectedCells[1:]:
+                self.data[record[0]][record[1]] = firstRecord
+
+    def onDelRowBtn_click(self):
+        if len(self.selectedCells) > 0:
+            for record in self.selectedCells:
+                del self.data[record[0]]
+            self.fisrtStageTable.model().layoutChanged.emit()
+            self.fisrtStageTable.resizeColumnsToContents()
+
+    def onClearCellBtn_click(self):
+        if len(self.selectedCells) > 0:
+            for record in self.selectedCells:
+                self.data[record[0]][record[1]] = ''
+            self.fisrtStageTable.model().layoutChanged.emit()
+            self.fisrtStageTable.resizeColumnsToContents()
+
+    def tableSelectionChangend(self, selected, deselected):
+        for ix in selected.indexes():
+            self.selectedCells.append([ix.row(),ix.column()])
+
+
+        for ix in deselected.indexes():
+            count = 0
+            while count < len(self.selectedCells):
+                if(self.selectedCells[count][0] == ix.row() and self.selectedCells[count][1] == ix.column()):
+                    del self.selectedCells[count]
+                else:
+                    count += 1
+        if len(self.selectedCells) > 1:
+            isSretchable = True
+            length = len(self.selectedCells)
+            for i in range(1, length):
+                if self.selectedCells[i][1] != self.selectedCells[i-1][1]:
+                    isSretchable = False
+                    break
+            if isSretchable:
+                self.stretchBtn.setEnabled(True)
+            else:
+                self.stretchBtn.setEnabled(False)
+        else:
+            self.stretchBtn.setEnabled(False)
+
 
     def uploadExcelFunc(self):
         doc = Workbook()
