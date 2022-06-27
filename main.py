@@ -4,6 +4,8 @@ from copy import deepcopy
 from datetime import datetime
 from datetime import date
 
+from operator import itemgetter
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 
@@ -221,10 +223,13 @@ class Ui_MainWindow(object):
 
     def onDelRowBtn_click(self):
         if len(self.selectedCells) > 0:
+            self.selectedCells = sorted(self.selectedCells, key=itemgetter(0), reverse=True)
+
             for record in self.selectedCells:
                 del self.data[record[0]]
             self.fisrtStageTable.model().layoutChanged.emit()
             self.fisrtStageTable.resizeColumnsToContents()
+            self.selectedCells.clear()
 
     def onClearCellBtn_click(self):
         if len(self.selectedCells) > 0:
