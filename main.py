@@ -376,7 +376,14 @@ class Ui_MainWindow(object):
             sem = int(row[i - 1])
             run.text = str(sem // 2 + sem % 2)
         elif i == 8 or i == 9:
-            run.text = row[i - 1].toString("\"dd\" MMMM yyyy г.").lower()
+            day = row[i - 1].toString("\"dd\"").lower()
+            month = row[i - 1].toString("MMMM").lower()
+            year = row[i - 1].toString("yyyy г.").lower()
+            if month[-1] == 'т':
+                finalDate = day + " " + month + 'a' + " " + year
+            else:
+                finalDate = day + " " + month[:-1] + 'я' + " " + year
+            run.text = finalDate
         elif i == 11:
             currentYear = date.today().year
             run.text = str(currentYear)
