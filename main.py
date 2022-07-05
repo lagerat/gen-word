@@ -367,7 +367,7 @@ class Ui_MainWindow(object):
 
         i = int(s)
 
-        if i < 1 or i > 11:
+        if i < 1 or i > 12:
             return
 
         run.font.highlight_color = WD_COLOR_INDEX.AUTO
@@ -387,6 +387,8 @@ class Ui_MainWindow(object):
         elif i == 11:
             currentYear = date.today().year
             run.text = str(currentYear)
+        elif i == 12:
+            run.text = str("".join(word[0].upper() for word in row[0].split()))
         else:
             run.text = row[i - 1]
 
