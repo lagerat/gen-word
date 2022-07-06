@@ -180,7 +180,11 @@ class Ui_MainWindow(object):
 
         self.uploadToExcel = QtWidgets.QAction(MainWindow)
         self.uploadToExcel.setObjectName("uploadToExcel")
+        self.infoMenu = QtWidgets.QAction(MainWindow)
+        self.infoMenu.setObjectName("infoMenu")
+
         self.menu.addAction(self.uploadToExcel)
+        self.menu.addAction(self.infoMenu)
         self.menubar.addAction(self.menu.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -205,15 +209,37 @@ class Ui_MainWindow(object):
         self.createBtn.setText(_translate("MainWindow", "Сгененировать"))
         self.menu.setTitle(_translate("MainWindow", "Меню"))
         self.uploadToExcel.setText(_translate("MainWindow", "Выгрузить в excel"))
+        self.infoMenu.setText(_translate("MainWindow","Коды для word файлов"))
 
     def connectFunctions(self):
         self.uploadBtn.clicked.connect(self.onUploadBtn_clicked)
         self.createBtn.clicked.connect(self.onCreateBtn_clicked)
         self.uploadToExcel.triggered.connect(self.uploadExcelFunc)
+        self.infoMenu.triggered.connect(self.onInfoMenuClick)
         self.fisrtStageTable.selectionModel().selectionChanged.connect(self.tableSelectionChangend)
         self.clearCellBtn.clicked.connect(self.onClearCellBtn_click)
         self.deleteRowBtn.clicked.connect(self.onDelRowBtn_click)
         self.stretchBtn.clicked.connect(self.onStretchBtn_click)
+
+    def onInfoMenuClick(self):
+        msg = QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Information)
+        msg.setText("1 - Институт\n"
+                    "2 - Направление\n"
+                    "3 - Профиль\n"
+                    "4 - Семестр\n"
+                    "5 - Вид практики\n"
+                    "6 - Тип Практики\n"
+                    "7 - Трудоёмкость\n"
+                    "8 - Дата начала\n"
+                    "9 - Дата окончания\n"
+                    "10 - Компетенции\n"
+                    "11 - Текущий год\n"
+                    "12 - Сокращенине института\n"
+                    "18 - Последний будний день от даты начала\n"
+                    "19 - Последний будний день от даты окончания")
+        msg.setWindowTitle("Коды")
+        msg.exec()
 
     def onStretchBtn_click(self):
         if len(self.selectedCells) > 0:
@@ -367,7 +393,7 @@ class Ui_MainWindow(object):
 
         i = int(s)
 
-        if i < 1 or i > 12:
+        if (i < 1 or i > 12) and i != 18 and i != 19:
             return
 
         run.font.highlight_color = WD_COLOR_INDEX.AUTO
@@ -389,6 +415,19 @@ class Ui_MainWindow(object):
             run.text = str(currentYear)
         elif i == 12:
             run.text = str("".join(word[0].upper() for word in row[0].split()))
+        elif i == 18 or i == 19:
+            newDate = QtCore.QDate.currentDate()
+            newDate.setDate(row[i-11].year(),row[i-11].month(),row[i-11].day())
+            while(QtCore.QDate.dayOfWeek(newDate) > 5):
+                newDate = newDate.addDays(-1)
+            day = newDate.toString("\"dd\"").lower()
+            month = newDate.toString("MMMM").lower()
+            year = newDate.toString("yyyy г.").lower()
+            if month[-1] == 'т':
+                finalDate = day + " " + month + 'a' + " " + year
+            else:
+                finalDate = day + " " + month[:-1] + 'я' + " " + year
+            run.text = finalDate
         else:
             run.text = row[i - 1]
 
@@ -400,7 +439,7 @@ class Ui_MainWindow(object):
 
         i = int(s)
 
-        if i < 1 or i > 11:
+        if i < 1 or i > 12:
             return
         run.font.highlight_color = WD_COLOR_INDEX.AUTO
         competencies = str(row[i - 1]).split(';')
